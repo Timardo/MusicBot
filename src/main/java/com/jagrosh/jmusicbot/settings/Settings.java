@@ -16,11 +16,16 @@
 package com.jagrosh.jmusicbot.settings;
 
 import com.jagrosh.jdautilities.command.GuildSettingsProvider;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
@@ -37,8 +42,9 @@ public class Settings implements GuildSettingsProvider
     private String defaultPlaylist;
     private boolean repeatMode;
     private String prefix;
+    private List<Long> bannedUsers;
     
-    public Settings(SettingsManager manager, String textId, String voiceId, String roleId, int volume, String defaultPlaylist, boolean repeatMode, String prefix)
+    public Settings(SettingsManager manager, String textId, String voiceId, String roleId, int volume, String defaultPlaylist, boolean repeatMode, String prefix, List<Object> bannedUsers)
     {
         this.manager = manager;
         try
@@ -69,6 +75,18 @@ public class Settings implements GuildSettingsProvider
         this.defaultPlaylist = defaultPlaylist;
         this.repeatMode = repeatMode;
         this.prefix = prefix;
+        this.bannedUsers = new ArrayList();
+        if (bannedUsers!=null)
+            try
+            {
+                bannedUsers.forEach((value) -> {
+                    this.bannedUsers.add((Long) value);
+                });
+            }
+            catch (NumberFormatException e)
+            {
+                ;
+            }
     }
     
     public Settings(SettingsManager manager, long textId, long voiceId, long roleId, int volume, String defaultPlaylist, boolean repeatMode, String prefix)
@@ -166,5 +184,28 @@ public class Settings implements GuildSettingsProvider
     {
         this.prefix = prefix;
         this.manager.writeSettings();
+    }
+    
+    public void banUser(User retard)
+    {
+        if (!this.bannedUsers.contains(retard.getIdLong()))
+        {
+            this.bannedUsers.add(retard.getIdLong());
+            this.manager.writeSettings();
+        }
+    }
+    
+    public void unbanUser(User user)
+    {
+        if (this.bannedUsers.contains(user.getIdLong()))
+        {
+            this.bannedUsers.remove(user.getIdLong());
+            this.manager.writeSettings();
+        }
+    }
+    
+    public List<Long> getBannedUsers()
+    {
+        return this.bannedUsers;
     }
 }

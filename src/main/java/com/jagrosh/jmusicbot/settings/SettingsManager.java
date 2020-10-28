@@ -22,6 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import net.dv8tion.jda.core.entities.Guild;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
@@ -42,13 +44,14 @@ public class SettingsManager implements GuildSettingsManager
             loadedSettings.keySet().forEach((id) -> {
                 JSONObject o = loadedSettings.getJSONObject(id);
                 settings.put(Long.parseLong(id), new Settings(this,
-                        o.has("text_channel_id") ? o.getString("text_channel_id") : null,
-                        o.has("voice_channel_id")? o.getString("voice_channel_id"): null,
-                        o.has("dj_role_id")      ? o.getString("dj_role_id")      : null,
-                        o.has("volume")          ? o.getInt("volume")             : 100,
-                        o.has("default_playlist")? o.getString("default_playlist"): null,
-                        o.has("repeat")          ? o.getBoolean("repeat")         : false,
-                        o.has("prefix")          ? o.getString("prefix")          : null));
+                        o.has("text_channel_id") ? o.getString("text_channel_id")          : null,
+                        o.has("voice_channel_id")? o.getString("voice_channel_id")         : null,
+                        o.has("dj_role_id")      ? o.getString("dj_role_id")               : null,
+                        o.has("volume")          ? o.getInt("volume")                      : 100,
+                        o.has("default_playlist")? o.getString("default_playlist")         : null,
+                        o.has("repeat")          ? o.getBoolean("repeat")                  : false,
+                        o.has("prefix")          ? o.getString("prefix")                   : null,
+                        o.has("banned_users")    ? o.getJSONArray("banned_users").toList() : null));
             });
         } catch(IOException | JSONException e) {
             LoggerFactory.getLogger("Settings").warn("Failed to load server settings (this is normal if no settings have been set yet): "+e);
@@ -97,6 +100,8 @@ public class SettingsManager implements GuildSettingsManager
                 o.put("repeat", true);
             if(s.getPrefix() != null)
                 o.put("prefix", s.getPrefix());
+            if(!s.getBannedUsers().isEmpty())
+                o.put("banned_users", new JSONArray(s.getBannedUsers()));
             obj.put(Long.toString(key), o);
         });
         try {

@@ -46,6 +46,15 @@ public abstract class MusicCommand extends Command
     protected void execute(CommandEvent event) 
     {
         Settings settings = event.getClient().getSettingsFor(event.getGuild());
+        if(settings.getBannedUsers().contains(event.getAuthor().getIdLong()))
+        {
+            try 
+            {
+                event.getMessage().delete().queue();
+            } catch(PermissionException ignore){}
+            event.reply(event.getClient().getError()+" Mutni si ho ty chuj");
+            return;
+        }
         TextChannel tchannel = settings.getTextChannel(event.getGuild());
         if(tchannel!=null && !event.getTextChannel().equals(tchannel))
         {

@@ -20,6 +20,8 @@ import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.DJCommand;
 import com.jagrosh.jmusicbot.settings.Settings;
 
+import net.dv8tion.jda.core.exceptions.PermissionException;
+
 /**
  *
  * @author John Grosh <john.a.grosh@gmail.com>
@@ -42,6 +44,15 @@ public class RepeatCmd extends DJCommand
     {
         boolean value;
         Settings settings = event.getClient().getSettingsFor(event.getGuild());
+        if(settings.getBannedUsers().contains(event.getAuthor().getIdLong()))
+        {
+            try 
+            {
+                event.getMessage().delete().queue();
+            } catch(PermissionException ignore){}
+            event.reply(event.getClient().getError()+" Mutni si ho ty chuj");
+            return;
+        }
         if(event.getArgs().isEmpty())
         {
             value = !settings.getRepeatMode();
