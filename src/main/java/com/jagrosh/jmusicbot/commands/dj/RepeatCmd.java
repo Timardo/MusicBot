@@ -20,7 +20,7 @@ import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.DJCommand;
 import com.jagrosh.jmusicbot.settings.Settings;
 
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 
 /**
  *
